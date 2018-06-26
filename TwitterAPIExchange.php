@@ -54,6 +54,13 @@ class TwitterAPIExchange
      */
     public $url;
 
+    
+    /**
+     * @var boolean
+     */
+    public $appjson;
+
+    
     /**
      * @var string
      */
@@ -88,8 +95,26 @@ class TwitterAPIExchange
         $this->oauth_access_token_secret = $settings['oauth_access_token_secret'];
         $this->consumer_key = $settings['consumer_key'];
         $this->consumer_secret = $settings['consumer_secret'];
+        $this->appjson=false;
     }
 
+     /**
+     * Set modo json post 
+     *
+     * @param true o false
+     * 
+     *
+     * @return TwitterAPIExchange Instance of self for method chaining
+     */
+    public function setPostJSON($valor=true) {
+        
+         $this->appjson=$valor;
+        
+         return $this;
+    }    
+    
+    
+    
     /**
      * Set postfields array, example: array('screen_name' => 'J7mbo')
      *
@@ -269,7 +294,11 @@ class TwitterAPIExchange
             throw new Exception('performRequest parameter must be true or false');
         }
 
-        $header =  array($this->buildAuthorizationHeader($this->oauth), 'Expect:');
+        if ($this->appjson) {
+            $header =  array('Content-Type: application/json',$this->buildAuthorizationHeader($this->oauth), 'Expect:');     
+        } else {
+           $header =  array($this->buildAuthorizationHeader($this->oauth), 'Expect:');    
+        }
 
         $getfield = $this->getGetfield();
         $postfields = $this->getPostfields();
